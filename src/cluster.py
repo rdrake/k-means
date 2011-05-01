@@ -17,8 +17,8 @@ class KMeans:
 
 	def __init__(self, K, N, R=2):
 		self.K = K
-		self.points = random.randn(N, R)
-		self.centroids = random.randn(K, R)
+		self.points = random.rand(N, R)
+		self.centroids = random.rand(K, R)
 	
 	def _assign_points(self):
 		# Default clusters are default.
@@ -47,21 +47,21 @@ class KMeans:
 			if cb:
 				cb(self.centroids)
 			
-		return (self.centroids, clusters)
+		return clusters
 
 class PlotKMeans:
 	def __init__(self, k):
 		self.k = k
 		
 		plt.ion()
-		plt.xlim(-1, 1)
-		plt.ylim(-1, 1)
+		plt.xlim(0, 1)
+		plt.ylim(0, 1)
 		
 		self.colours = ["b", "g", "r", "c", "m", "y"]
 	
 	def plot(self):
 		c = k.cluster(cb=self._plot_centroids)
-		#self._plot_clusters(c[1])
+		self._plot_clusters(c)
 	
 	def _plot_centroids(self, centroids):
 		for (i, centroid) in enumerate(centroids):
@@ -71,16 +71,15 @@ class PlotKMeans:
 			plt.draw()
 	
 	def _plot_clusters(self, clusters):
-		for (i, cluster) in enumerate(clusters):
-			print len(cluster[0::2])
-			print len(cluster[1::2])
-			plt.plot(cluster[0::2],
-				cluster[1::2], ".",
-				color=self.colours[i % len(self.colours)])
+		for cluster in enumerate(clusters):
+			for point in cluster[1]:
+				plt.plot(point[0::2],
+					point[1::2], ".", alpha=0.5,
+					color=self.colours[cluster[0] % len(self.colours)])
 		
 		plt.draw()
 
-k = KMeans(5, 100)
+k = KMeans(3, 500)
 p = PlotKMeans(k)
 p.plot()
 
