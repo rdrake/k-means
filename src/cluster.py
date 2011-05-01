@@ -1,6 +1,6 @@
 from numpy import *
 
-import matplotlib.pyplot as plt
+from matplotlib.pyplot import *
 
 from pprint import pprint
 
@@ -15,10 +15,10 @@ class KMeans:
 	Numpy is used to make computations easier.
 	"""
 
-	def __init__(self, K, N, R=2):
+	def __init__(self, K, N):
 		self.K = K
-		self.points = random.rand(N, R)
-		self.centroids = random.rand(K, R)
+		self.points = random.randn(N, 2)
+		self.centroids = random.randn(K, 2)
 	
 	def _assign_points(self):
 		# Default clusters are default.
@@ -31,56 +31,47 @@ class KMeans:
 			
 		return clusters
 	
-	def cluster(self, cb=None):
+	def cluster(self, cb=None):#cen_cb=None, cst_cb=None):
 		clusters = self._assign_points()
 		
 		# Perform 5 iterations.
-		for a in range(10):
+		for a in range(25):
 			# Recompute centroid.
 			for i_c in range(len(clusters)):
-				self.centroids[i_c][0] = mean(clusters[i_c][0::2])
-				self.centroids[i_c][1] = mean(clusters[i_c][1::2])
+				self.centroids[i_c][0] = mean([p[0] for p in clusters[i_c]])
+				self.centroids[i_c][1] = mean([p[1] for p in clusters[i_c]])
 			
 			# Recompute clustering.
 			clusters = self._assign_points()
 			
 			if cb:
-				cb(self.centroids)
+				cb(clusters, self.centroids)
 			
 		return clusters
 
 class PlotKMeans:
-	def __init__(self, k):
-		self.k = k
-		
-		plt.ion()
-		plt.xlim(0, 1)
-		plt.ylim(0, 1)
+	def __init__(self):
+		ion()
+		xlim(-3, 3)
+		ylim(-3, 3)
 		
 		self.colours = ["b", "g", "r", "c", "m", "y"]
 	
-	def plot(self):
-		c = k.cluster(cb=self._plot_centroids)
-		self._plot_clusters(c)
-	
-	def _plot_centroids(self, centroids):
-		for (i, centroid) in enumerate(centroids):
-			plt.plot(centroid[0::2],
-				centroid[1::2], "+",
-				color=self.colours[i % len(self.colours)])
-			plt.draw()
-	
-	def _plot_clusters(self, clusters):
-		for cluster in enumerate(clusters):
-			for point in cluster[1]:
-				plt.plot(point[0::2],
-					point[1::2], ".", alpha=0.5,
-					color=self.colours[cluster[0] % len(self.colours)])
+	def plot(self, clusters, centroids):
+		hold(False)
+		plot([p[0] for p in centroids], [p[1] for p in centroids],
+			"+", color="k")
 		
-		plt.draw()
+		hold(True)
+		for (i, cluster) in enumerate(clusters):
+			plot([p[0] for p in cluster], [p[1] for p in cluster],
+				".", alpha=0.4, color=self.colours[i % len(self.colours)])
+		
+		draw()
 
 k = KMeans(3, 500)
-p = PlotKMeans(k)
-p.plot()
+p = PlotKMeans()
 
-input()
+k.cluster(cb=p.plot)
+
+raw_input()
