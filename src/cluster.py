@@ -31,11 +31,27 @@ class KMeans:
 			
 		return clusters
 	
+	def _compute_rss(self, centroid, cluster):
+		return sum([linalg.norm(centroid-cluster) ** 2 for point in cluster])
+	
 	def cluster(self, cb=None):#cen_cb=None, cst_cb=None):
 		clusters = self._assign_points()
+		prev_rss = 0
+		iters = 0
 		
 		# Perform 5 iterations.
-		for a in range(25):
+		while True:
+			iters += 1
+			rss = sum([self._compute_rss(centroid, clusters[i]) for (i, centroid) in enumerate(self.centroids)])
+			
+			print "Computed RSS is %.04f." % rss
+			
+			if rss == prev_rss:
+				print "Converged in %d iterations." % iters
+				break
+			else:
+				prev_rss = rss
+			
 			# Recompute centroid.
 			for i_c in range(len(clusters)):
 				self.centroids[i_c][0] = mean([p[0] for p in clusters[i_c]])
@@ -74,4 +90,5 @@ p = PlotKMeans()
 
 k.cluster(cb=p.plot)
 
+print "Press any key to exit..."
 raw_input()
