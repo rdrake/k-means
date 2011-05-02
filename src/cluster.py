@@ -2,8 +2,6 @@ from numpy import *
 
 from matplotlib.pyplot import *
 
-from pprint import pprint
-
 class KMeans:
 	"""
 	Fairly faithful implementation of K-Means as described in the book
@@ -85,10 +83,22 @@ class PlotKMeans:
 		
 		draw()
 
-k = KMeans(3, 500)
-p = PlotKMeans()
+if __name__ == "__main__":
+	from argparse import *
+	
+	parser = ArgumentParser(
+		description="Implementation of K-Means clustering.",
+		version="K-Means 0.3 (C) 2011 Richard Drake."
+	)
+	parser.add_argument("--k", type=int, default=3, help="Number of clusters.")
+	parser.add_argument("--npoints", type=int, default=500, help="Number of points to cluster.")
+	
+	args = parser.parse_args()
 
-k.cluster(cb=p.plot)
+	k = KMeans(args.k, args.npoints)
+	p = PlotKMeans()
 
-print "Press any key to exit..."
-raw_input()
+	k.cluster(cb=p.plot)
+
+	print "Press any key to exit..."
+	raw_input()
